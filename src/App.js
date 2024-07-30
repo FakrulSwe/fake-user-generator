@@ -35,7 +35,6 @@ const App = () => {
 
     return (
         <div className="App container">
-            <h1 className='text-center pb-4'>Generating Random User Data</h1>
             <Controls
                 region={region}
                 regions={regions}
@@ -63,20 +62,24 @@ const generateRecord = (index, region, errorCount) => {
     const address = generateAddress(region);
     const phone = generatePhone(region);
 
-    let modifiedName = name.firstName;
-    if (errorCount > 0) {
-        for (let i = 0; i < errorCount; i++) {
-            modifiedName = applyError(modifiedName);
-        }
-    }
-
-    return {
+    // Introduce errors based on errorCount
+    const record = {
         index: index + 1,
         id: faker.datatype.uuid(),
-        name: `${modifiedName} ${name.middleName} ${name.lastName}`,
+        name: `${name.firstName} ${name.middleName} ${name.lastName}`,
         address: address,
         phone: phone,
     };
+
+    if (errorCount > 0) {
+        for (let i = 0; i < errorCount; i++) {
+            const keys = Object.keys(record).filter(key => key !== 'index' && key !== 'id');
+            const keyToCorrupt = keys[Math.floor(Math.random() * keys.length)];
+            record[keyToCorrupt] = applyError(record[keyToCorrupt]);
+        }
+    }
+
+    return record;
 };
 
 const generateName = (region) => {
