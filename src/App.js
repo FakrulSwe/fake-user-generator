@@ -4,8 +4,8 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
-import Controls from './Controls';
-import DataTable from './DataTable';
+import Controls from './components/Controls';
+import DataTable from './components/DataTable';
 
 const regions = ['Poland', 'USA', 'Georgia'];
 
@@ -35,7 +35,7 @@ const App = () => {
 
     return (
         <div className="App container">
-          <h1 className='text-center pb-4'>Generating Random User Data</h1>
+            <h1 className='text-center pb-4'>Generating Random User Data</h1>
             <Controls
                 region={region}
                 regions={regions}
@@ -59,30 +59,27 @@ const App = () => {
 };
 
 const generateRecord = (index, region, errorCount) => {
-    // Generate realistic data based on region
     const name = generateName(region);
     const address = generateAddress(region);
     const phone = generatePhone(region);
 
-    // Introduce errors based on errorCount
-    const errorProbability = errorCount / 10;
-    if (Math.random() < errorProbability) {
-        // Apply errors to the data (e.g., typos, missing parts)
-        // Example error application (you can add more error types)
-        name.firstName = applyError(name.firstName);
+    let modifiedName = name.firstName;
+    if (errorCount > 0) {
+        for (let i = 0; i < errorCount; i++) {
+            modifiedName = applyError(modifiedName);
+        }
     }
 
     return {
         index: index + 1,
         id: faker.datatype.uuid(),
-        name: `${name.firstName} ${name.middleName} ${name.lastName}`,
+        name: `${modifiedName} ${name.middleName} ${name.lastName}`,
         address: address,
         phone: phone,
     };
 };
 
 const generateName = (region) => {
-    // Generate names based on the region
     return {
         firstName: faker.name.firstName(),
         middleName: faker.name.middleName(),
@@ -91,19 +88,16 @@ const generateName = (region) => {
 };
 
 const generateAddress = (region) => {
-    // Generate addresses based on the region
     return `${faker.address.city()}, ${faker.address.streetAddress()}`;
 };
 
 const generatePhone = (region) => {
-    // Generate phone numbers based on the region
     return faker.phone.number();
 };
 
 const applyError = (text) => {
-    // Introduce a simple typo error
     const index = Math.floor(Math.random() * text.length);
-    const char = String.fromCharCode(text.charCodeAt(index) + 1);
+    const char = String.fromCharCode(text.charCodeAt(index) + Math.floor(Math.random() * 10) - 5);
     return text.slice(0, index) + char + text.slice(index + 1);
 };
 
