@@ -35,6 +35,7 @@ const App = () => {
 
     return (
         <div className="App container">
+            <h1 className='text-center pb-4'>Generating Random User Data</h1>
             <Controls
                 region={region}
                 regions={regions}
